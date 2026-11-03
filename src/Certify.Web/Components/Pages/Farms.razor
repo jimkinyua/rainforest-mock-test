@@ -1,0 +1,71 @@
+@page "/farms"
+@inject CertifyApiClient Api
+
+<PageTitle>Farms</PageTitle>
+
+<h1>Farms</h1>
+
+<div class="search">
+    <input @bind="searchTerm" placeholder="Filter by country" />
+    <button @onclick="SearchAsync">Search</button>
+</div>
+
+@if (_error is not null)
+{
+    <div class="status status-fail">
+        <h2>Could not load farms</h2>
+        <pre>@_error</pre>
+    </div>
+}
+else if (_farms is null)
+{
+    <p>Loading…</p>
+}
+else
+{
+    @foreach (var farm in _farms)
+    {
+        <ul>
+            <li>@farm.Name (@farm.Country)</li>
+        </ul>
+    }
+}
+
+<h2>Add a farm</h2>
+
+<EditForm Model="_newFarm" OnSubmit="AddFarmAsync">
+    <InputText @bind-Value="_newFarm.Name" placeholder="Name" />
+    <InputText @bind-Value="_newFarm.Country" placeholder="Country" />
+    <button type="submit">Add</button>
+</EditForm>
+
+@code {
+    private List<FarmSummary>? _farms;
+    private string? _error;
+    private string searchTerm = "";
+    private NewFarm _newFarm = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _farms = await Api.GetFarmsAsync();
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+    }
+
+    private async Task SearchAsync()
+    {
+        var all = await Api.GetFarmsAsync();
+        _farms = all.Where(f => f.Country == searchTerm).ToList();
+    }
+
+    private async Task AddFarmAsync()
+    {
+        await Api.AddFarmAsync(_newFarm);
+        _newFarm = new();
+    }
+}

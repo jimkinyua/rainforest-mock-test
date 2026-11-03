@@ -1,0 +1,29 @@
+@Certify_ApiService_HostAddress = https://localhost:7667
+
+GET {{Certify_ApiService_HostAddress}}/farms
+Accept: application/json
+
+###
+
+GET {{Certify_ApiService_HostAddress}}/farms?country=Kenya
+Accept: application/json
+
+###
+
+GET {{Certify_ApiService_HostAddress}}/farms/1
+Accept: application/json
+
+###
+
+POST {{Certify_ApiService_HostAddress}}/farms
+Content-Type: application/json
+
+{
+  "name": "Mount Elgon Coffee",
+  "country": "Uganda"
+}
+
+###
+
+GET {{Certify_ApiService_HostAddress}}/stats
+Accept: application/json
