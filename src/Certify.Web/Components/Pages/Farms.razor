@@ -24,12 +24,13 @@ else if (_farms is null)
 }
 else
 {
-    @foreach (var farm in _farms)
-    {
-        <ul>
-            <li>@farm.Name (@farm.Country)</li>
-        </ul>
-    }
+    <ul>
+        @foreach (var farm in _farms)
+        {
+                <li>@farm.Name (@farm.Country)</li>
+        }
+    </ul>
+
 }
 
 <h2>Add a farm</h2>
@@ -54,7 +55,7 @@ else
     private string? _error;
     private string searchTerm = "";
     private NewFarmDTO _newFarm = new();
-    private string? _addError = string.Empty;
+    private string? _addError = null;
 
     protected override async Task OnInitializedAsync()
     {
@@ -77,6 +78,7 @@ else
     {
         try
         {
+            _addError = null;
             await Api.AddFarmAsync(_newFarm);
             _newFarm = new();
             _farms = await Api.GetFarmsAsync();

@@ -4,7 +4,12 @@ public static class CertificationRules
 {
     public static CertificationLevel LevelFor(int score)
     {
-        if (score > 85)
+        if (score> 100 || score <0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(score), "Max is 100 min is 0")
+        }
+       
+        if (score => 85)
         {
             return CertificationLevel.Gold;
         }

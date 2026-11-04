@@ -6,12 +6,13 @@ public class CertifyApiClient(HttpClient httpClient)
 {
     public async Task<List<FarmSummary>> GetFarmsAsync(string? term ="", CancellationToken cancellationToken = default)
     {
-        return await httpClient.GetFromJsonAsync<List<FarmSummary>>($"/farms?country={term}", cancellationToken) ?? [];
+        return await httpClient.GetFromJsonAsync<List<FarmSummary>>($"/farms?country={Uri.EscapeDataString(term)}", cancellationToken) ?? [];
     }
 
     public async Task AddFarmAsync(NewFarmDTO farm, CancellationToken cancellationToken = default)
     {
-        await httpClient.PostAsJsonAsync("/farms", farm, cancellationToken);
+       var response = await httpClient.PostAsJsonAsync("/farms", farm, cancellationToken);
+        response.EnsureSuccessStatusCode();
     }
 }
 

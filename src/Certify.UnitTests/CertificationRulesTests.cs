@@ -23,4 +23,12 @@ public class CertificationRulesTests
 
         Assert.Equal(expected, level);
     }
+
+    [Fact]
+    public void Add_OutofRanngeScore_ReturnsException()
+    {
+        var score = 105;
+
+        Assert.Throws<ArgumentOutOfRangeException(()=>CertificationRules.LevelFor(score)) >
+    }
 }

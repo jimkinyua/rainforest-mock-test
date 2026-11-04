@@ -11,7 +11,7 @@ public static class FarmEndpoints
 {
     public static void MapFarmEndpoints(this WebApplication app)
     {
-        app.MapGet("/farms", async (string? country, CertifyDbContext db) =>
+        app.MapGet("/farms", async (string? country, CertifyDbContext db, CancellationToken ct) =>
         {
             IQueryable<Farm> farmQuery = db.Farms;
 
@@ -36,17 +36,34 @@ public static class FarmEndpoints
                 .ToList()
             })
             
-            .ToListAsync();
+            .ToListAsync(ct);
             return TypedResults.Ok(farms);
         });
 
-        app.MapGet("/farms/{id}", async (int id, CertifyDbContext db) =>
+        app.MapGet("/farms/{id}", async Task<Results<Ok<FarmItem>, NotFound>> (int id, CertifyDbContext db, CancellationToken ct) =>
         {
-            var farm = await db.Farms
-                .Include(f => f.Audits)
-                .FirstOrDefaultAsync(f => f.Id == id);
 
-            return Results.Ok(farm);
+            var farm = await db.Farms
+                .Select( f =>new FarmItem
+                {
+                    Id= f.Id,
+                    Name = f.Name,
+                    Country = f.Country,
+                    Audits = f.Audits.Select(a => new AuditItem
+                    {
+                        Level = a.Level,
+                        Auditor = a.Auditor,
+                        Score = a.Score
+                    }).ToList()
+                })
+                .FirstOrDefaultAsync(f => f.Id == id, ct);
+
+            if (farm is null )
+            {
+                return TypedResults.NotFound();
+            }
+
+            return TypedResults.Ok(farm);
         });
 
         app.MapPost("/farms", async (NewFarmItem farm, CertifyDbContext db) =>
