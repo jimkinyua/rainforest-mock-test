@@ -1,4 +1,5 @@
 @page "/farms"
+@rendermode InteractiveServer
 @inject CertifyApiClient Api
 
 <PageTitle>Farms</PageTitle>
@@ -33,9 +34,18 @@ else
 
 <h2>Add a farm</h2>
 
-<EditForm Model="_newFarm" OnSubmit="AddFarmAsync">
+<EditForm Model="_newFarm" OnValidSubmit="AddFarmAsync">
+    <DataAnnotationsValidator/>
     <InputText @bind-Value="_newFarm.Name" placeholder="Name" />
+    <ValidationMessage For="()=>_newFarm.Name"></ValidationMessage>
     <InputText @bind-Value="_newFarm.Country" placeholder="Country" />
+    <ValidationMessage For="()=>_newFarm.Country"></ValidationMessage>
+
+    @if (_addError is not null)
+    {
+        <p style="color:red" >@_addError</p>
+    }
+
     <button type="submit">Add</button>
 </EditForm>
 
@@ -43,7 +53,8 @@ else
     private List<FarmSummary>? _farms;
     private string? _error;
     private string searchTerm = "";
-    private NewFarm _newFarm = new();
+    private NewFarmDTO _newFarm = new();
+    private string? _addError = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
@@ -59,13 +70,20 @@ else
 
     private async Task SearchAsync()
     {
-        var all = await Api.GetFarmsAsync();
-        _farms = all.Where(f => f.Country == searchTerm).ToList();
+        _farms = await Api.GetFarmsAsync(searchTerm);
     }
 
     private async Task AddFarmAsync()
     {
-        await Api.AddFarmAsync(_newFarm);
-        _newFarm = new();
+        try
+        {
+            await Api.AddFarmAsync(_newFarm);
+            _newFarm = new();
+            _farms = await Api.GetFarmsAsync();
+
+        }catch(Exception ex)
+        {
+            _addError = ex.Message;   
+        }
     }
 }

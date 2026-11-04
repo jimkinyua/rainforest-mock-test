@@ -8,10 +8,11 @@ builder.AddServiceDefaults();
 
 builder.Services.AddProblemDetails();
 builder.Services.AddOpenApi();
+builder.Services.AddValidation();
 
-builder.AddSqlServerDbContext<CertifyDbContext>("certificationdb");
+builder.AddSqlServerDbContext<CertifyDbContext>("certifydb");
 
-builder.Services.AddSingleton<FarmStatsService>();
+builder.Services.AddScoped<FarmStatsService>();
 
 var app = builder.Build();
 

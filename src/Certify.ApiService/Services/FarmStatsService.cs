@@ -3,7 +3,7 @@ using Certify.ApiService.Domain;
 
 namespace Certify.ApiService.Services;
 
-public class FarmStatsService(CertifyDbContext db)
+public class  FarmStatsService(CertifyDbContext db)
 {
     public Dictionary<CertificationLevel, int> CountByLevel()
     {

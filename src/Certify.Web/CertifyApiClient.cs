@@ -4,12 +4,12 @@ namespace Certify.Web;
 
 public class CertifyApiClient(HttpClient httpClient)
 {
-    public async Task<List<FarmSummary>> GetFarmsAsync(CancellationToken cancellationToken = default)
+    public async Task<List<FarmSummary>> GetFarmsAsync(string? term ="", CancellationToken cancellationToken = default)
     {
-        return await httpClient.GetFromJsonAsync<List<FarmSummary>>("/farms", cancellationToken) ?? [];
+        return await httpClient.GetFromJsonAsync<List<FarmSummary>>($"/farms?country={term}", cancellationToken) ?? [];
     }
 
-    public async Task AddFarmAsync(NewFarm farm, CancellationToken cancellationToken = default)
+    public async Task AddFarmAsync(NewFarmDTO farm, CancellationToken cancellationToken = default)
     {
         await httpClient.PostAsJsonAsync("/farms", farm, cancellationToken);
     }
@@ -17,7 +17,7 @@ public class CertifyApiClient(HttpClient httpClient)
 
 public record FarmSummary(int Id, string Name, string Country);
 
-public class NewFarm
+public class NewFarmDTO
 {
     [Required]
     [StringLength(200)]

@@ -10,7 +10,7 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddHttpClient<CertifyApiClient>(client =>
 {
-    client.BaseAddress = new("https+http://certify-api");
+    client.BaseAddress = new("https+http://apiservice");
 });
 
 var app = builder.Build();

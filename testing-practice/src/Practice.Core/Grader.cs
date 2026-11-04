@@ -14,7 +14,7 @@ public static class Grader
             return "A";
         }
 
-        if (score > 60)
+        if (score >= 60)
         {
             return "B";
         }
